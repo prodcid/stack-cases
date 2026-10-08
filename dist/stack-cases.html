@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name="stack-version" content="2026.10.08.2"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name="stack-version" content="2026.10.08.3"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Stack Cases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&display=swap" rel="stylesheet">
@@ -2289,11 +2289,19 @@ try{let raw=window.__SAVE;if(raw==null){try{raw=localStorage.getItem(KEY)}catch(
 S.stats=Object.assign({spent:0,unboxed:0,upgW:0,upgL:0,batW:0,batL:0,tu:0,top:0},S.stats);if(!S.stats.tc){S.stats.tc=[0,0,0,0,0,0];S.items.forEach(it=>S.stats.tc[SK[it.s].t]++)}
 (S.forged||[]).forEach(regForged);ccRefund();S.items=S.items.filter(it=>SK[it.s]);S.items.forEach(it=>{it.c=SK[it.s].ci;it.v=valueOf(it)});S.best=S.best.filter(it=>SK[it.s]);S.best.forEach(it=>it.v=valueOf(it));
 S.gems=(S.gems||[]).filter(it=>SK[it.s]);S.mints=S.mints||{};S.bm=S.bm||{};S.charms=S.charms||[];S.stickers=S.stickers||[];S.cab=S.cab||[];S.prefs=S.prefs||{};S.cst=S.cst||{};
-let saveWarned=false,saveT=0;
-const save=()=>{if(saveT)return;saveT=setTimeout(()=>{saveT=0;saveNow()},150)};
+/* Item ids used to restart from the clock on every load, so two items could share one (and selling
+   either removed both). Carry on past the highest stored id instead, and split any twins already saved. */
+{const all=[S.items,S.best,S.gems,S.charms,S.stickers,(S.rival&&S.rival.v)||[]].flat();_uid=all.reduce((m,o)=>Math.max(m,+(o&&o.id)||0),_uid);
+  const seen=new Set;S.items.forEach(it=>{if(seen.has(it.id))it.id=++_uid;seen.add(it.id)})}
+/* One save slot, but the game can be open more than once (launcher, Play.cmd, an old tab). Once another
+   tab has saved, this copy is stale and must never save again, or it writes back what it still holds:
+   an unpinned cabinet item, a sold skin. Hidden tabs leave saving to their own hide/close save, so a
+   background timer can't clobber the tab you're playing in. A stale tab reloads when you return to it. */
+let saveWarned=false,saveT=0,staleTab=false;
+const save=()=>{if(saveT)return;saveT=setTimeout(()=>{saveT=0;if(!document.hidden)saveNow()},150)};
 const saveJSON=()=>{S._ts=Date.now();return JSON.stringify(Object.assign({},S,{items:S.items.map(strip),best:S.best.map(strip),gems:S.gems.map(strip)}))};
 window.__lastJSON=()=>saveJSON();
-const saveNow=()=>{if(window.__restoring)return;let json='';try{json=saveJSON();if(window.__cloudSave)window.__cloudSave(json)}catch(e){}try{localStorage.setItem(KEY,json)}catch(e){if(!saveWarned&&!(window.__cloud&&window.__cloud.on)){saveWarned=true;setTimeout(()=>toast('Storage is full, so progress can\'t save. Sell some cheap items.','',1),500)}}};
+const saveNow=()=>{if(window.__restoring||staleTab)return;let json='';try{json=saveJSON();if(window.__cloudSave)window.__cloudSave(json)}catch(e){}try{localStorage.setItem(KEY,json)}catch(e){if(!saveWarned&&!(window.__cloud&&window.__cloud.on)){saveWarned=true;setTimeout(()=>toast('Storage is full, so progress can\'t save. Sell some cheap items.','',1),500)}}};
 
 /* ---------- balance (shares the Stack wallet when embedded) ---------- */
 const BR=window.StackBridge;
@@ -2645,7 +2653,7 @@ $('sndBtn').onclick=()=>{A.init();const {m}=modal(`<h2>Settings</h2>
   m.querySelector('#vol').onchange=()=>A.reveal(1);
   m.querySelector('#sm').onclick=e=>{S.snd.mute=!S.snd.mute;A.setVol();save();drawSnd();const b=e.currentTarget;b.classList.toggle('on',!S.snd.mute);b.lastChild.textContent=S.snd.mute?'Off':'On'};
   m.querySelector('#stk').onclick=e=>{S.tick=!S.tick;save();const b=e.currentTarget;b.classList.toggle('on',S.tick);b.lastChild.textContent=S.tick?'On':'Off'};
-  m.querySelector('#reset').onclick=e=>{const b=e.currentTarget;if(b.dataset.c){localStorage.removeItem(KEY);localStorage.removeItem(OLD);location.reload()}else{b.dataset.c=1;b.textContent='Tap again to wipe everything'}}};
+  m.querySelector('#reset').onclick=e=>{const b=e.currentTarget;if(b.dataset.c){window.__restoring=true;localStorage.removeItem(KEY);localStorage.removeItem(OLD);location.reload()}else{b.dataset.c=1;b.textContent='Tap again to wipe everything'}}};
 
 /* ================= LIVE DROPS ================= */
 const BOTS=['Dazza','Shazza','Mick','Kez','Bazza','Tayls','Jono','Bec','Robbo','Macca','Lachie','Sully','Gaz','Nat','Tommo','Zara'];
@@ -2844,7 +2852,7 @@ function inspect(it,onSold){const sk=SK[it.s],isEq=S.equip===it.id,pinned=(S.cab
     if(a==='sell'){if(sellItem(it)){close();onSold&&onSold();if(view==='stash')drawStash();if(view==='cases')drawShop()}}
     if(a==='upg'){close();toUpgrader(it)}
     if(a==='lock'){it.lk=it.lk?0:1;save();redo()}
-    if(a==='pin'){S.cab=S.cab||[];if(pinned)S.cab=S.cab.filter(x=>x!==it.id);else{if(S.cab.length>=6){toast('Your cabinet holds 6. Unpin one first.','',1);return}S.cab.push(it.id)}save();redo()}
+    if(a==='pin'){S.cab=S.cab||[];if(S.cab.includes(it.id))S.cab=S.cab.filter(x=>x!==it.id);else{if(S.cab.length>=6){toast('Your cabinet holds 6. Unpin one first.','',1);return}S.cab.push(it.id)}save();redo()}
     if(a==='equip'){S.equip=isEq?null:it.id;save();redo()}
     if(a==='uncharm'){releaseCharm(it);save();A.nav();redo()}
     if(a==='charm'){if(!S.charms.length){toast('No charms yet. Open a Charm Capsule in the Stash tab.','',1);return}pickCharm(c=>{S.charms=S.charms.filter(x=>x.id!==c.id);it.charm=c;save();A.ach();redo()})}
@@ -3781,7 +3789,10 @@ setInterval(()=>{document.querySelectorAll('[data-mkcd]').forEach(e=>e.textConte
   const idle=window.requestIdleCallback||(f=>setTimeout(()=>f({timeRemaining:()=>8}),60));
   const run=d=>{while(jobs.length&&d.timeRemaining()>4)jobs.shift()();if(jobs.length)idle(run)};setTimeout(()=>idle(run),1500)})();
 /* ---------- boot ---------- */
-const setH=()=>document.documentElement.style.setProperty('--hdr',document.querySelector('.top').offsetHeight+'px');setH();addEventListener('resize',setH);addEventListener('pagehide',()=>saveNow());document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
+const setH=()=>document.documentElement.style.setProperty('--hdr',document.querySelector('.top').offsetHeight+'px');setH();addEventListener('resize',setH);addEventListener('pagehide',()=>saveNow());
+addEventListener('storage',e=>{if(e.key!==KEY||staleTab||window.__restoring)return;staleTab=true;if(document.hidden||document.querySelector('.stalebar'))return;
+  const b=document.createElement('button');b.className='cloudbar stalebar';b.textContent='The game was changed in another tab. Click to load the latest.';b.onclick=()=>{window.__restoring=true;location.reload()};document.body.appendChild(b)});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&staleTab){window.__restoring=true;location.reload()}});document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 count=S.prefs.count||1;quick=!!S.prefs.quick;S.items.concat(S.gems).forEach(noteCodex);drawBal();drawLvl();drawSnd();drawShop();checkAch();
 setTimeout(botDrop,600);for(let i=0;i<6;i++)setTimeout(()=>{const pool=CASES.filter(C=>REG(C)&&C.price<=100),C=pool[i%pool.length];pushTicker(rollItem(C.ci,2+(i%3===0)),BOTS[(i*5)%BOTS.length])},50*i);
 window.StackCases={feat:()=>FEAT,cat:()=>catalogue(),forceAng:f=>{FORCE.ang=f},force:t=>{FORCE.t=t},forceEd:e=>{FORCE.ed=e},bmOpen:()=>{S.bm.next=Date.now()},xp:n=>addXP(n),state:()=>S,sfx:A};

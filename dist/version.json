@@ -1,6 +1,6 @@
 {
-  "version": "2026.10.08.2",
-  "notes": "Edition badges redesigned: every badge is now a glowing foil plate with its own icon and colour - crowned gold Grails, sapphire pattern gems that get grander each tier, glitching Misprints, starlit First Editions, a turning rainbow rim on Prismatic",
-  "bytes": 429322,
-  "at": "2026-10-08T07:46:40.755Z"
+  "version": "2026.10.08.3",
+  "notes": "Cabinet fix: unpinned items no longer come back. A second open copy of the game could save its older state over yours - now a stale tab never saves and reloads to the latest when you return to it. Also fixed items sharing an id (selling one could remove both) and the wipe-everything button not wiping",
+  "bytes": 430799,
+  "at": "2026-10-08T07:53:31.041Z"
 }
