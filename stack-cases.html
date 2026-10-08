@@ -608,6 +608,68 @@ select{background:var(--panel2);color:var(--bone);border:1px solid var(--line2);
 .chip.fec{background:#9fd8ff;color:#001a2a;border:0;font-weight:800}
 .chip.ooc{background:var(--panel2);color:var(--bone);border:1px solid var(--bone);font-weight:750}
 .chip.fgc{background:linear-gradient(90deg,#ff7a2a,#ffd24a,#fff2c0);color:#2a1000;border:0;font-weight:800}
+/* ---------- edition badges: foil plates ----------
+   One look for every edition marker: a dark face tinted with the edition colour, a metallic
+   rim (gradient border), glowing light text and an icon. Each edition sets --a (main),
+   --b (highlight), --ink (text) and --ic (icon) below; the rarest also get a light sweep. */
+:is(.badge,.gem,.chip.st,.chip.gemc,.chip.prc,.chip.mpc,.chip.grc,.chip.odc,.chip.fec,.chip.fgc){
+  overflow:hidden;isolation:isolate;border:1px solid transparent;color:var(--ink);font-weight:800;letter-spacing:.05em;
+  font-variation-settings:'wdth' 76,'opsz' 12;white-space:nowrap;text-overflow:ellipsis;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--a) 38%,#0c0c0e),color-mix(in srgb,var(--a) 10%,#040405) 70%) padding-box,
+             linear-gradient(135deg,var(--b),var(--a) 35%,color-mix(in srgb,var(--a) 35%,#000) 62%,var(--b) 100%) border-box;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(0,0,0,.55),0 0 9px color-mix(in srgb,var(--a) 40%,transparent),0 2px 5px rgba(0,0,0,.75);
+  text-shadow:0 0 6px color-mix(in srgb,var(--a) 85%,transparent),0 1px 0 rgba(0,0,0,.9)}
+:is(.badge,.gem){font-size:8.5px;line-height:1.3;padding:2px 6px 2px 5px;border-radius:5px;text-transform:uppercase}
+.gem{max-width:76%;text-transform:none;letter-spacing:.03em;font-size:9px}
+.badge:not(.mpb):not(.feb)+.gem{max-width:calc(100% - 46px)}
+.badge.mpb,.badge.feb{top:25px}
+:is(.chip.st,.chip.gemc,.chip.prc,.chip.mpc,.chip.grc,.chip.odc,.chip.fec,.chip.fgc){position:relative;font-size:12px;padding:4px 12px 4px 10px;letter-spacing:.06em;text-transform:uppercase}
+:is(.badge,.gem,.chip)::before{content:var(--ic);margin-right:.38em;color:var(--b);text-shadow:0 0 5px var(--a)}
+/* the light sweep */
+:is(.gem.g2,.gem.g3,.gem.gr,.badge.feb,.chip.gemc.g3,.chip.grc,.chip.prc,.chip.fgc,.chip.fec)::after{content:'';position:absolute;inset:-1px;z-index:-1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.08) 42%,rgba(255,255,255,.6) 50%,rgba(255,255,255,.08) 58%,transparent 70%);
+  transform:translateX(-130%);animation:edsweep 3.8s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes edsweep{55%,100%{transform:translateX(130%)}}
+
+/* ST™: forged orange */
+.badge,.chip.st{--a:#ff7a1a;--b:#ffd09a;--ink:#ffe8d2;--ic:'\25B2'}
+/* pattern gems: sapphire, getting grander each tier */
+.gem,.chip.gemc{--a:#2f6bff;--b:#9ae0ff;--ink:#dcf1ff;--ic:'\25C6'}
+.gem.g2,.chip.gemc.g2{--a:#3a8cff;--b:#c8f2ff;--ink:#eef9ff;--ic:'\2756'}
+.gem.g3,.chip.gemc.g3{--a:#3fa0ff;--b:#ffffff;--ink:#ffffff;--ic:'\2726';
+  background:radial-gradient(120% 140% at 50% 0%,rgba(160,225,255,.45),transparent 60%) padding-box,linear-gradient(180deg,#1d4fc8,#06123a 75%) padding-box,
+             conic-gradient(from 200deg,#ffffff,#9ae0ff,#2f6bff,#c8f2ff,#ffffff,#3a8cff,#ffffff) border-box;
+  animation:edpulse 2.4s ease-in-out infinite}
+@keyframes edpulse{50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 16px rgba(80,170,255,.85),0 0 4px #fff,0 2px 5px rgba(0,0,0,.75)}}
+/* grail: crowned gold leaf */
+.gem.gr,.chip.grc{--a:#e0a516;--b:#fff4bf;--ink:#fff6d6;--ic:'\265B';
+  background:radial-gradient(120% 140% at 50% 0%,rgba(255,236,160,.5),transparent 60%) padding-box,linear-gradient(180deg,#7a5200,#1c1100 75%) padding-box,
+             linear-gradient(135deg,#fff4bf,#e0a516 30%,#6b4500 55%,#ffe28a 78%,#fff4bf) border-box;
+  animation:edgold 2.8s ease-in-out infinite}
+@keyframes edgold{50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 16px rgba(255,200,60,.85),0 2px 5px rgba(0,0,0,.75)}}
+/* misprint: the ink channels slip */
+.badge.mpb,.chip.mpc{--a:#18c48e;--b:#7affd0;--ink:#e2fff3;--ic:'\2318';
+  background:linear-gradient(180deg,#0d4a37,#03140f 70%) padding-box,linear-gradient(90deg,#ff005a,#7affd0 30%,#7affd0 70%,#00dcff) border-box;
+  text-shadow:1px 0 0 rgba(255,0,90,.85),-1px 0 0 rgba(0,220,255,.85),0 0 6px #18c48e;animation:edslip 3.2s steps(1) infinite}
+@keyframes edslip{0%,88%,100%{text-shadow:1px 0 0 rgba(255,0,90,.85),-1px 0 0 rgba(0,220,255,.85),0 0 6px #18c48e}
+  90%{text-shadow:3px 0 0 rgba(255,0,90,.95),-3px 0 0 rgba(0,220,255,.95),0 0 6px #18c48e;transform:translateX(1px)}
+  94%{text-shadow:-2px 0 0 rgba(255,0,90,.95),2px 0 0 rgba(0,220,255,.95),0 0 6px #18c48e;transform:translateX(-1px)}}
+/* first edition: frosted starlight */
+.badge.feb,.chip.fec{--a:#3aa8ff;--b:#e6f7ff;--ink:#f0faff;--ic:'\2726'}
+/* overdrive: electric */
+.chip.odc{--a:#00a2ff;--b:#bfe8ff;--ink:#e8f7ff;--ic:'\26A1'}
+/* forged one of one: molten */
+.chip.fgc{--a:#ff6a1a;--b:#fff2c0;--ink:#fff4dc;--ic:'\2692';
+  background:linear-gradient(180deg,#7a2a00,#1a0800 75%) padding-box,linear-gradient(90deg,#ff7a2a,#ffd24a,#fff2c0,#ffd24a,#ff7a2a) border-box}
+/* prismatic: a rainbow rim that keeps turning */
+.chip.prc{--a:#c03aff;--b:#fff;--ink:#fff;--ic:'\25C8';
+  background:linear-gradient(180deg,#2a1a3a,#0a0610 75%) padding-box,linear-gradient(90deg,#ff3a5a,#ffd23a,#3aff8a,#3ab0ff,#c03aff,#ff3a5a,#ffd23a) border-box;
+  background-size:100% 100%,200% 100%;animation:edprism 2.4s linear infinite;
+  text-shadow:0 0 6px rgba(255,255,255,.6),0 1px 0 rgba(0,0,0,.9)}
+.chip.prc::before{animation:prism 3s linear infinite;display:inline-block;color:#ff6a8a}
+@keyframes edprism{to{background-position:0 0,-200% 0}}
+/* "New" marker in the codex: quiet steel */
+.gem.nw{--a:#6a6a72;--b:#e0e0e6;--ink:#f2f2f0;--ic:'\25CF';box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 5px rgba(0,0,0,.75)}
 .hist{margin:14px auto 0;max-width:520px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
 .hist h3{font-size:14px;margin-bottom:6px}
 .hrow{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
@@ -2350,7 +2412,7 @@ const fullName=it=>{const sk=SK[it.s];return(it.st?'ST™ ':'')+sk.name+' | '+sk
 const edName=it=>{const pi=patInfo(SK[it.s],it.p);return(it.pr?'Prismatic ':it.mp?'Misprint ':'')+fullName(it)+(pi.grail?' (Grail)':pi.tag?` (${pi.tag})`:'')};
 const tierName=t=>t===4?'★ Special':TIERS[t].n;
 function tileHTML(it,o={}){const sk=SK[it.s],t=sk.t,pi=o.rep||o.hide?{tag:''}:patInfo(sk,it.p),ed=o.rep?'':edCls(it,pi);
-  return `<div class="tile r${t}${ed}${o.cls?' '+o.cls:''}" ${o.attr||''}>${it.st&&!o.rep?'<span class="badge">ST</span>':''}${pi.tag?`<span class="gem${pi.grail?' gr':''}">${pi.tag}</span>`:''}${it.mp&&!o.rep?'<span class="badge mpb">MISPRINT</span>':''}
+  return `<div class="tile r${t}${ed}${o.cls?' '+o.cls:''}" ${o.attr||''}>${it.st&&!o.rep?'<span class="badge">ST</span>':''}${pi.tag?`<span class="gem${pi.grail?' gr':' g'+(pi.gem||1)}">${pi.tag}</span>`:''}${it.mp&&!o.rep?'<span class="badge mpb">MISPRINT</span>':''}
    ${it.lk&&!o.rep?`<span class="lkb">${IC.lock.replace('class="lk"','')}</span>`:''}<img ${o.rep?lzImg(sk,repItem(sk),200):lzImg(sk,it,200)} alt="">${it.fe&&!o.rep?'<span class="badge feb">1ST ED</span>':''}<span class="n">${sk.name}</span><span class="k">${sk.skin}${!o.rep&&o.cond!==false?' · '+condOf(it.f)[2]:''}</span>${o.val?`<span class="v">${o.val}</span>`:''}</div>`}
 const edCls=(it,pi)=>(it.pr?' pris':'')+(it.mp?' misp':'')+(pi&&pi.grail?' grail':'');
 const goldTile=cx=>`<div class="tile gold r4"><div class="star">${cx?'✦':'★'}</div><span class="n">${cx?'Contraband':'Rare Special Item'}</span></div>`;
@@ -2653,7 +2715,7 @@ function openCasePage(ci){cur=ci;const C=CASES[ci];if(C.free)count=1;else count=
     <button class="tog${quick?' on':''}" id="quick"><i></i>Quick open</button><button class="btn pri go" id="open"></button></div>
    <div class="odds">${C.tp.map((p,t)=>p?`<i class="r${t}" style="flex:${Math.max(p,.006)}"></i>`:'').join('')}</div>
    <div class="contents">${tiers.map(t=>`<h3 class="r${t}"><i></i>${t===4?'★ Rare Special Items':t===5?'✦ Contraband':TIERS[t].n}<span>${(C.tp[t]*100).toFixed(t?t>=4?3:2:1)}%</span></h3>
-     <div class="cgrid2">${(C.bm?sampleSk(C.skins[t],t>=4?18:12):C.skins[t]).map(sk=>{const[lo,hi]=rangeOf(sk),seen=S.seen[sk.id];return `<div class="tile r${t}" style="height:128px">${seen?'':'<span class="gem" style="background:#2a2a2d;color:#b9b9bf">New</span>'}<img ${lzImg(sk,repItem(sk),200)} alt="" loading="lazy"><span class="n">${sk.name}</span><span class="k">${sk.skin}</span><span class="v">${money(lo)} – ${money(hi)}</span></div>`}).join('')}</div>`).join('')}</div>`;
+     <div class="cgrid2">${(C.bm?sampleSk(C.skins[t],t>=4?18:12):C.skins[t]).map(sk=>{const[lo,hi]=rangeOf(sk),seen=S.seen[sk.id];return `<div class="tile r${t}" style="height:128px">${seen?'':'<span class="gem nw">New</span>'}<img ${lzImg(sk,repItem(sk),200)} alt="" loading="lazy"><span class="n">${sk.name}</span><span class="k">${sk.skin}</span><span class="v">${money(lo)} – ${money(hi)}</span></div>`}).join('')}</div>`).join('')}</div>`;
   $('back').onclick=()=>{if(!busy)show('cases')};
   $('stage').onclick=()=>{if(busy)SKIP=true};
   const cnt=$('cnt');if(cnt)cnt.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(busy)return;count=+b.dataset.n;S.prefs.count=count;save();cnt.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));drawOpenBtn()});
@@ -2724,7 +2786,7 @@ function revealHTML(it,{sell=true,again=false,upg=false}={}){const sk=SK[it.s],t
   return `<div class="reveal r${t}"><div class="rays"></div>
    <div class="shine fx-${sk.fin}${it.pr?' pris':''}"><div class="in"><img src="${im}" alt=""><div class="gl auto" style="-webkit-mask-image:url(${im});mask-image:url(${im})"></div></div></div>
    <div class="rname">${esc(fullName(it))}<small>${tierName(t)}, ${cd[1]}</small></div>
-   <div class="chips">${it.pr?'<span class="chip prc">Prismatic</span>':''}${it.mp?'<span class="chip mpc">Misprint</span>':''}${pi.grail?`<span class="chip grc">Grail ${pi.stat}${it.gn?` · #${it.gn[0]} of ${it.gn[1]}`:''}</span>`:''}${it.fe?'<span class="chip fec">First Edition</span>':''}${sk.forged?'<span class="chip fgc">One of one · Forged</span>':''}${it.oo&&sk.t>=4?'<span class="chip ooc">Original owner</span>':''}${it.mint?`<span class="chip fl">Mint #${it.mint}</span>`:''}${it.od?'<span class="chip odc">Overdrive</span>':''}${it.st?'<span class="chip st">ST™ Stack Track</span>':''}${pi.tag&&!pi.grail?`<span class="chip gemc">${pi.tag}</span>`:''}${ft?`<span class="chip fl">${ft}</span>`:''}${curioChips(it)}<span class="chip">Pattern ${it.p}</span>${pi.stat?`<span class="chip">${pi.stat}</span>`:''}</div>
+   <div class="chips">${it.pr?'<span class="chip prc">Prismatic</span>':''}${it.mp?'<span class="chip mpc">Misprint</span>':''}${pi.grail?`<span class="chip grc">Grail ${pi.stat}${it.gn?` · #${it.gn[0]} of ${it.gn[1]}`:''}</span>`:''}${it.fe?'<span class="chip fec">First Edition</span>':''}${sk.forged?'<span class="chip fgc">One of one · Forged</span>':''}${it.oo&&sk.t>=4?'<span class="chip ooc">Original owner</span>':''}${it.mint?`<span class="chip fl">Mint #${it.mint}</span>`:''}${it.od?'<span class="chip odc">Overdrive</span>':''}${it.st?'<span class="chip st">ST™ Stack Track</span>':''}${pi.tag&&!pi.grail?`<span class="chip gemc g${pi.gem||1}">${pi.tag}</span>`:''}${ft?`<span class="chip fl">${ft}</span>`:''}${curioChips(it)}<span class="chip">Pattern ${it.p}</span>${pi.stat?`<span class="chip">${pi.stat}</span>`:''}</div>
    ${pi.rank?`<div class="rank">${pi.rank}</div>`:''}
    <div class="flt"><div class="b"><i></i><i></i><i></i><i></i><i></i></div><div class="m"><span style="left:${it.f*100}%"></span></div>
      <div class="sl">${COND.map(c=>`<i class="${c===cd?'on':''}">${c[2]}</i>`).join('')}</div><div class="t">Float <b>${it.f.toFixed(8)}</b></div></div>

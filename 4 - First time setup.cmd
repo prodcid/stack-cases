@@ -30,7 +30,7 @@ if errorlevel 1 goto :failed
 echo.
 echo   ----------------------------------------------------------
 echo   Setup done. Now run "3 - Ship to mate.cmd" once to put the
-echo   first build up, then send your mate launcher.html.
+echo   first build up, then send your mate launcher-cases.html.
 echo   ----------------------------------------------------------
 goto :end
 

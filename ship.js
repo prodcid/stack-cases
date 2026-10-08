@@ -13,7 +13,7 @@
      3. write dist/stack-cases.html + dist/version.json
      4. git commit + push
 
-   launcher.html downloads dist/stack-cases.html every time it's opened online,
+   launcher-cases.html downloads dist/stack-cases.html every time it's opened online,
    caches it, and runs it. Nothing to re-send, ever.
    ========================================================================== */
 
@@ -24,7 +24,7 @@ const { execFileSync, spawnSync } = require('child_process');
 
 const ROOT     = __dirname;
 const GAME     = path.join(ROOT, 'stack-cases.html');
-const LAUNCHER = path.join(ROOT, 'launcher.html');
+const LAUNCHER = path.join(ROOT, 'launcher-cases.html');
 const DIST     = path.join(ROOT, 'dist');
 const VER_RE   = /<meta name="stack-version" content="([^"]*)">/;
 
@@ -110,7 +110,7 @@ function setup(user, repo) {
 
   const L = read(LAUNCHER);
   if (!/user:\s*'[^']*'/.test(L) || !/repo:\s*'[^']*'/.test(L))
-    die('Could not find the SRC block in launcher.html. Did it get edited?');
+    die('Could not find the SRC block in launcher-cases.html. Did it get edited?');
   write(LAUNCHER, L.replace(/user:\s*'[^']*'/, `user:   '${user}'`)
                    .replace(/repo:\s*'[^']*'/, `repo:   '${repo}'`));
 
@@ -120,7 +120,7 @@ function setup(user, repo) {
     ensureTrusted();
     console.log('  git repo initialised');
   }
-  // launcher.html fetches from "main"; a repo left on "master" would 404 silently.
+  // the launcher fetches from "main"; a repo left on "master" would 404 silently.
   if ((gitSoft('rev-parse', '--abbrev-ref', 'HEAD') || '') !== 'main') {
     gitSoft('branch', '-M', 'main');
     gitSoft('symbolic-ref', 'HEAD', 'refs/heads/main');
@@ -138,7 +138,7 @@ function setup(user, repo) {
     1. Create an EMPTY public repo named "${repo}" at github.com/new
        (no README, no .gitignore - this folder supplies them)
     2. node ship.js "first build"
-    3. Send launcher.html to your mate. That's the only file he ever needs.
+    3. Send launcher-cases.html to your mate. That's the only file he ever needs.
 `);
 }
 
@@ -179,8 +179,9 @@ function ship(notes, local) {
   if (!fs.existsSync(path.join(ROOT, '.git'))) die('No git repo yet. Run "4 - First time setup.cmd" first.');
   ensureTrusted();
   git('add', '-A');
-  if (!gitSoft('diff', '--cached', '--name-only')) { console.log('  nothing changed since the last ship.\n'); return; }
-  git('commit', '-m', `${version}${notes ? ' - ' + notes : ''}`);
+  // Nothing new still pushes: a previous ship may have committed and then failed to push.
+  if (gitSoft('diff', '--cached', '--name-only')) git('commit', '-m', `${version}${notes ? ' - ' + notes : ''}`);
+  else console.log('  nothing new to commit - pushing anything not yet published.');
 
   try {
     git('push', '-u', 'origin', gitSoft('rev-parse', '--abbrev-ref', 'HEAD') || 'main');
@@ -188,7 +189,7 @@ function ship(notes, local) {
     die('Commit made, but the push failed:\n  ' + String(e.stderr || e.message).trim() +
         '\n\n  Usually: the GitHub repo does not exist yet, or you are not signed in to git.');
   }
-  console.log(`  pushed ${version}. Your mate gets it next time he opens launcher.html.\n`);
+  console.log(`  pushed ${version}. Your mate gets it next time he opens launcher-cases.html.\n`);
 }
 
 /* ---------- dispatch ---------- */

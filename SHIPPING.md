@@ -16,7 +16,7 @@ Terminal equivalents: `node ship.js "what changed"`, `node ship.js --local "note
 
 - `stack-cases.html` is the game. Edit this one.
 - Shipping stamps a version (`YYYY.MM.DD.N`) into `dist/stack-cases.html`, commits, pushes.
-- `launcher.html` is the only file your mate has. Each time he opens it online it downloads
+- `launcher-cases.html` is the only file your mate has. Each time he opens it online it downloads
   `dist/stack-cases.html` from GitHub (jsdelivr as backup), caches it, and runs it.
   Offline, it runs the last cached build.
 - Saves (`stackCases.v2`) stay put across updates.

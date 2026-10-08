@@ -7,7 +7,7 @@ echo.
 echo   ==========================================================
 echo    SHIP AN UPDATE - STACK CASES
 echo    This sends the game to your mate. He gets it next time
-echo    he opens launcher.html.
+echo    he opens launcher-cases.html.
 echo   ==========================================================
 echo.
 set "NOTES="
